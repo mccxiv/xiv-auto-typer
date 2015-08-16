@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+
+        <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.2/material.light_blue-pink.min.css" />
+        <script src="https://storage.googleapis.com/code.getmdl.io/1.0.2/material.min.js"></script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="import" href="bower_components/polymer/polymer.html">
+        <link rel="import" href="bower_components/neon-animation/neon-animated-pages.html">
+        <link rel="import" href="bower_components/neon-animation/neon-animatable.html">
+        <link rel="import" href="bower_components/neon-animation/neon-animations.html">
+
+        <style>
+            html {box-sizing: border-box;}
+            html * {box-sizing: inherit;}
+
+            body {
+                padding: 40px;
+                color: #808080;
+            }
+
+            .pages {
+                height: calc(100vh - 80px);
+            }
+
+            .input-container {
+                display: flex;
+                flex-direction: row;
+            }
+
+            .input-container .spacer {
+                width: 30px;
+            }
+
+            .input-container .mdl-textfield {
+                flex-grow: 1;
+                width: 100%;
+            }
+
+            .input-container .mdl-textfield input {
+                padding-left: 12px;
+            }
+
+            .input-container .mdl-textfield label {
+                padding-left: 12px;
+            }
+
+            .controls-page {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .controls-container {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+            }
+
+            .controls-container .after-container,
+            .controls-container .scheme-container {
+                display: flex;
+                flex-direction: column;
+            }
+
+            i.material-icons {
+                font-size: 1.5rem;
+                position: relative;
+                border-radius: 50%;
+                padding: 5px;
+                margin: 3px;
+                transition: color 0.2s ease, background-color 0.2s ease, transform 0.3s ease;
+            }
+
+            i.material-icons:after {
+                content: "";
+                width: 100%;
+                height: 100%;
+                border: solid transparent 2px;
+                transform: scale(0.8);
+                position: absolute;
+                top: -2px;
+                left: -2px;
+                border-radius: 50%;
+                transition: all 0.3s ease;
+            }
+
+            i.material-icons:hover:after {
+                transform: scale(1);
+            }
+
+            i.material-icons {
+                padding: 10px;
+                font-size: 2rem;
+            }
+            i.material-icons:after {
+                border-width:3px;
+                top:-3px;
+                left:-3px;
+            }
+
+            i.material-icons:hover {
+                background-color: transparent;
+                transform: rotate(360deg);
+                cursor: pointer;
+                box-shadow: none;
+            }
+
+            .button:hover {
+                color: #03A9F4;
+            }
+
+            .button:hover:after {
+                border-color: #03A9F4;
+            }
+
+            .back-button {
+                position: absolute;
+                padding: 25px;
+                top: 0;
+            }
+
+            .buttons {
+                display: flex;
+                justify-content: flex-end;
+                margin-top: -30px;
+                margin-bottom: -15px;
+            }
+
+            .button {
+                margin-left: 20px !important;
+            }
+
+            .mdl-textfield--floating-label .mdl-textfield__label {
+                overflow: visible;
+            }
+
+            .mdl-textfield--floating-label.is-dirty .mdl-textfield__label {
+                top: 24px;
+                left: -50px;
+            }
+
+            .mdl-textfield--floating-label.is-dirty .mdl-textfield__label::after {
+                margin-left: 50px;
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <template is="dom-bind" id="app">
+            <neon-animated-pages class="pages" selected="[[selected]]" entry-animation="scale-up-animation" exit-animation="scale-down-animation">
+                <neon-animatable class="main-page">
+                    <div class="buttons">
+                        <i class="material-icons button" on-click="infoScreen">info</i>
+                        <i class="material-icons button" on-click="heartScreen">favorite</i>
+                        <i class="material-icons button" on-click="settingsScreen">settings</i>
+                    </div>
+                    <template is="dom-repeat" items="[1,2,3,4,5,6,7,8]">
+                        <div class="input-container">
+                            <span class="spacer"></span>
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input class="mdl-textfield__input" type="text" id="[[concat('field-', item)]]">
+                                <label class="mdl-textfield__label" for="[[concat('field-', item)]]">F<span>{{item}}</span></label>
+                            </div>
+                        </div>
+                    </template>
+                </neon-animatable>
+                <neon-animatable class="controls-page">
+                    <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored back-button" on-click="mainScreen">
+                        <span class="material-icons">keyboard_backspace</span>
+                    </button>
+                    <div class="controls-container">
+                        <div class="after-container">
+                            <h4>After typing...</h4>
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+                                <input checked class="mdl-radio__button" name="after" type="radio" value="enter">
+                                <span class="mdl-radio__label">Include enter</span>
+                            </label>
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+                                <input class="mdl-radio__button" name="after" type="radio" value="tab">
+                                <span class="mdl-radio__label">Include tab</span>
+                            </label>
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+                                <input class="mdl-radio__button" name="after" type="radio" value="none">
+                                <span class="mdl-radio__label">Do nothing</span>
+                            </label>
+                        </div>
+
+                        <div class="scheme-container">
+                            <h4>Hotkey style</h4>
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+                                <input checked class="mdl-radio__button" name="scheme" type="radio" value="regular">
+                                <span class="mdl-radio__label">F1</span>
+                            </label>
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+                                <input class="mdl-radio__button" name="scheme" type="radio" value="control">
+                                <span class="mdl-radio__label">Ctrl + F1</span>
+                            </label>
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+                                <input class="mdl-radio__button" name="scheme" type="radio" value="alt">
+                                <span class="mdl-radio__label">Alt + F1</span>
+                            </label>
+                        </div>
+                    </div>
+                </neon-animatable>
+            </neon-animated-pages>
+        </template>
+
+        <script>
+            var ipc = require('ipc');
+            var app = document.getElementById('app');
+            app.selected = 0;
+
+            app.addEventListener('dom-change', function() {
+                // Dynamic MDL elements need to be upgraded
+                setTimeout(function() {
+                    var mdlElements = document.querySelectorAll('.mdl-textfield, .mdl-radio, .mdl-tooltip');
+                    componentHandler.upgradeElements(mdlElements);
+                }, 0);
+            });
+
+            app.mainScreen = function() {
+                app.selected = 0;
+            };
+
+            app.settingsScreen = function() {
+                app.selected = 1;
+            };
+
+            app.concat = function(a, b) {
+                return a+b;
+            };
+
+            ipc.on('string?', function() {
+                ipc.send('string', 'The string!');
+            })
+        </script>
+
+
+    </body>
+</html>

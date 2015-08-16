@@ -1,0 +1,18 @@
+{
+  "name": "XivAutoTyper",
+  "version": "0.0.0",
+  "main": "main.js",
+  "author": {
+    "name": "Andrea Stella",
+    "email": "adr.stella@gmail.com",
+    "url": "http://mccxiv.me"
+  },
+  "description": "Types phrases for you",
+  "dependencies": {
+    "electron-prebuilt": "^0.30.1",
+    "robotjs": "^0.2.3"
+  },
+  "devDependencies": {
+    "electron-rebuild": "^0.2.5"
+  }
+}
