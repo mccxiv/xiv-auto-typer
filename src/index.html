@@ -157,7 +157,7 @@
                         <div class="input-container">
                             <span class="spacer"></span>
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                <input class="mdl-textfield__input f-input" type="text" id="[[concat('field-', item)]]">
+                                <input class="mdl-textfield__input input" type="text" id="[[concat('field-', item)]]">
                                 <label class="mdl-textfield__label" for="[[concat('field-', item)]]">F<span>{{item}}</span></label>
                             </div>
                         </div>
@@ -212,12 +212,7 @@
                 setTimeout(function() {
                     var mdlElements = document.querySelectorAll('.mdl-textfield, .mdl-radio, .mdl-tooltip');
                     componentHandler.upgradeElements(mdlElements);
-
-                    document.querySelectorAll('f-input').forEach(function(el) {
-                        el.addEventListener('change', function() {
-                           //ipc.send('el.value;
-                        });
-                    });
+                    emitInputChangeEvents();
                 }, 0);
             });
 
@@ -236,6 +231,14 @@
             ipc.on('string?', function() {
                 ipc.send('string', 'The string!');
             });
+
+            function emitInputChangeEvents() {
+                document.querySelectorAll('input').forEach(function(el, index) {
+                    el.addEventListener('change', function() {
+                        ipc.send('input-changed', {index: index, value: el.value});
+                    });
+                });
+            }
         </script>
 
 

@@ -29,9 +29,9 @@ var settings = {
 app.on('ready', makeWindow);
 app.on('window-all-closed', close);
 
-ipc.on('input-change', inputChanged);
-ipc.on('after-change', afterChanged);
-ipc.on('scheme-change', schemeChanged);
+ipc.on('input-changed', inputChanged);
+ipc.on('after-changed', afterChanged);
+ipc.on('scheme-changed', schemeChanged);
 
 //=========================================================
 // Main functions
