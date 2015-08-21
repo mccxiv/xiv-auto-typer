@@ -66,7 +66,7 @@ function close() {
  * Handler for the ipc input-change event
  * @param {{index: number, value: string}} arg
  */
-function inputChanged(arg) {
+function inputChanged(event, arg) {
 	var value = arg.value;
 	var shortcut = shortcuts[settings.scheme][arg.index];
 
@@ -76,11 +76,11 @@ function inputChanged(arg) {
 	if (value) register(shortcut, typeFunction(value));
 }
 
-function afterChanged(after) {
+function afterChanged(event, after) {
 	settings.after = after;
 }
 
-function schemeChanged(scheme) {
+function schemeChanged(event, scheme) {
 	var oldScheme = settings.scheme;
 	settings.scheme = scheme;
 	unregisterAll(oldScheme);
@@ -105,7 +105,7 @@ function unregisterAll(scheme) {
 function registerAll() {
 	settings[scheme].forEach(function(accelerator, index) {
 		if (settings.inputs[index]) register(accelerator, typeFunction(settings.inputs[index]));
-	})
+	});
 }
 
 function unregister(accelerator) {

@@ -6,6 +6,9 @@
 
         <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.2/material.light_blue-pink.min.css" />
         <script src="https://storage.googleapis.com/code.getmdl.io/1.0.2/material.min.js"></script>
+        <!--<link rel="stylesheet" href="bower_components/material-design-lite/material.min.css">
+        <script src="bower_components/material-design-lite/material.min.js"></script>-->
+
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="import" href="bower_components/polymer/polymer.html">
         <link rel="import" href="bower_components/neon-animation/neon-animated-pages.html">
@@ -157,7 +160,7 @@
                         <div class="input-container">
                             <span class="spacer"></span>
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                <input class="mdl-textfield__input input" type="text" id="[[concat('field-', item)]]">
+                                <input class="mdl-textfield__input" type="text" id="[[concat('field-', item)]]">
                                 <label class="mdl-textfield__label" for="[[concat('field-', item)]]">F<span>{{item}}</span></label>
                             </div>
                         </div>
@@ -203,6 +206,7 @@
         </template>
 
         <script>
+            var $ = require('jquery');
             var ipc = require('ipc');
             var app = document.getElementById('app');
             app.selected = 0;
@@ -212,6 +216,7 @@
                 setTimeout(function() {
                     var mdlElements = document.querySelectorAll('.mdl-textfield, .mdl-radio, .mdl-tooltip');
                     componentHandler.upgradeElements(mdlElements);
+                    loadStrings();
                     emitInputChangeEvents();
                 }, 0);
             });
@@ -228,19 +233,75 @@
                 return a+b;
             };
 
-            ipc.on('string?', function() {
-                ipc.send('string', 'The string!');
-            });
-
             function emitInputChangeEvents() {
-                document.querySelectorAll('input').forEach(function(el, index) {
+                var nodes = document.querySelectorAll('.input-container input');
+                for (var i = 0; i < nodes.length; i++) {
+                    attach(nodes[i], i);
+                }
+
+                function attach(el, index) {
                     el.addEventListener('change', function() {
-                        ipc.send('input-changed', {index: index, value: el.value});
+                        saveString(index, el.value);
+                        sendInput(index, el.value);
                     });
-                });
+                }
+            }
+
+            function saveString(index, string) {
+                var strings = getStrings();
+                strings[index] = string || null;
+                setStrings(strings);
+            }
+
+            function sendInput(index, value) {
+                ipc.send('input-changed', {index: index, value: value});
+            }
+
+            function loadStrings() {
+                var strings = getStrings();
+                var textfields = document.querySelectorAll('.mdl-textfield');
+                for (var i = 0; i < textfields.length; i++) {
+                    console.log('this string is', strings[i]);
+                    if (typeof strings[i] === 'string' && strings[i].length > 0) {
+                        sendInput(i, strings[i]);
+                        textfields[i].querySelector('input').value = strings[i];
+                        textfields[i].classList.add('is-dirty');
+                    }
+                }
+            }
+
+            function getStrings() {
+                var strings;
+
+                try {strings = localStorage.getItem('strings');}
+                catch (e) {alert('Error: Could not read saved values');}
+
+                if (strings) {
+                    try {strings = JSON.parse(strings);}
+                    catch (e) {
+                        strings = [];
+                        alert('Error: Error parsing the saved values');
+                    }
+                }
+
+                else strings = [];
+
+                return strings;
+            }
+
+            function setStrings(arr) {
+                console.log('setting', arr);
+                var strings;
+
+                try {strings = JSON.stringify(arr);}
+                catch (e) {alert('Error: Could not prepare values for saving');}
+
+                if (!strings) return;
+
+                try {localStorage.setItem('strings', strings);}
+                catch (e) {alert('Error: Could not save values');}
             }
         </script>
-
 
     </body>
 </html>
