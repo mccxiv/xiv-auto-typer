@@ -153,7 +153,7 @@
                 <neon-animatable class="main-page">
                     <div class="buttons">
                         <i class="material-icons button" on-click="infoScreen">info</i>
-                        <i class="material-icons button" on-click="heartScreen">favorite</i>
+                        <!--<i class="material-icons button" on-click="heartScreen">favorite</i>-->
                         <i class="material-icons button" on-click="settingsScreen">settings</i>
                     </div>
                     <template is="dom-repeat" items="[1,2,3,4,5,6,7,8]">
@@ -166,6 +166,11 @@
                         </div>
                     </template>
                 </neon-animatable>
+
+                <neon-animatable class="main-page">
+                    <i class="material-icons button back-button" on-click="mainScreen">keyboard_backspace</i>
+                </neon-animatable>
+
                 <neon-animatable class="controls-page">
                     <i class="material-icons button back-button" on-click="mainScreen">keyboard_backspace</i>
                     <div class="controls-container">
@@ -206,7 +211,7 @@
         </template>
 
         <script>
-            var $ = require('jquery');
+            //var $ = require('jquery'); todo remove
             var ipc = require('ipc');
             var app = document.getElementById('app');
             app.selected = 0;
@@ -216,8 +221,11 @@
                 setTimeout(function() {
                     var mdlElements = document.querySelectorAll('.mdl-textfield, .mdl-radio, .mdl-tooltip');
                     componentHandler.upgradeElements(mdlElements);
+                    loadSettings();
                     loadStrings();
                     emitInputChangeEvents();
+                    emitAfterChangeEvent();
+                    emitSchemeChangeEvent();
                 }, 0);
             });
 
@@ -225,8 +233,12 @@
                 app.selected = 0;
             };
 
-            app.settingsScreen = function() {
+            app.infoScreen = function() {
                 app.selected = 1;
+            };
+
+            app.settingsScreen = function() {
+                app.selected = 2;
             };
 
             app.concat = function(a, b) {
@@ -234,23 +246,45 @@
             };
 
             function emitInputChangeEvents() {
-                var nodes = document.querySelectorAll('.input-container input');
-                for (var i = 0; i < nodes.length; i++) {
-                    attach(nodes[i], i);
-                }
-
-                function attach(el, index) {
+                eachNode('.input-container input', function(el, index) {
                     el.addEventListener('change', function() {
                         saveString(index, el.value);
                         sendInput(index, el.value);
                     });
+                });
+            }
+
+            function emitAfterChangeEvent() {
+                eachNode('input[name="after"]', function(el) {
+                    el.addEventListener('click', function() {
+                        console.log('after changeed!');
+                        saveSetting('after', el.value);
+                        ipc.send('after-changed', el.value);
+                    });
+                });
+            }
+
+            function emitSchemeChangeEvent() {
+                eachNode('input[name="scheme"]', function(el) {
+                    el.addEventListener('click', function() {
+                        saveSetting('scheme', el.value);
+                        ipc.send('scheme-changed', el.value);
+                    });
+                });
+            }
+
+            function eachNode(selector, fn) {
+                var nodes = document.querySelectorAll(selector);
+                for (var i = 0; i < nodes.length; i++) {
+                    fn(nodes[i], i);
                 }
             }
 
             function saveString(index, string) {
-                var strings = getStrings();
-                strings[index] = string || null;
-                setStrings(strings);
+                var settings = getSettings();
+                if (!settings.strings) settings.strings = [];
+                settings.strings[index] = string || null;
+                setSettings(settings);
             }
 
             function sendInput(index, value) {
@@ -258,10 +292,9 @@
             }
 
             function loadStrings() {
-                var strings = getStrings();
+                var strings = getSettings().strings || [];
                 var textfields = document.querySelectorAll('.mdl-textfield');
                 for (var i = 0; i < textfields.length; i++) {
-                    console.log('this string is', strings[i]);
                     if (typeof strings[i] === 'string' && strings[i].length > 0) {
                         sendInput(i, strings[i]);
                         textfields[i].querySelector('input').value = strings[i];
@@ -270,36 +303,55 @@
                 }
             }
 
-            function getStrings() {
-                var strings;
+            function loadSettings() {
+                var settings = getSettings();
 
-                try {strings = localStorage.getItem('strings');}
+                var afterEl = document.querySelector('input[name="after"][value="'+settings.after+'"]');
+                if (afterEl) afterEl.click();
+
+                var schemeEl = document.querySelector('input[name="scheme"][value="'+settings.scheme+'"]');
+                if (schemeEl) schemeEl.click();
+
+                ipc.send('scheme-after', settings.after);
+                ipc.send('scheme-changed', settings.scheme);
+            }
+
+            function getSettings() {
+                var settings;
+
+                try {settings = localStorage.getItem('settings');}
                 catch (e) {alert('Error: Could not read saved values');}
 
-                if (strings) {
-                    try {strings = JSON.parse(strings);}
+                if (settings) {
+                    try {settings = JSON.parse(settings);}
                     catch (e) {
-                        strings = [];
+                        settings = {};
                         alert('Error: Error parsing the saved values');
                     }
                 }
 
-                else strings = [];
+                else settings = {};
 
-                return strings;
+                return settings;
             }
 
-            function setStrings(arr) {
-                console.log('setting', arr);
-                var strings;
+            function setSettings(obj) {
+                console.log('setting', obj);
+                var settings;
 
-                try {strings = JSON.stringify(arr);}
+                try {settings = JSON.stringify(obj);}
                 catch (e) {alert('Error: Could not prepare values for saving');}
 
-                if (!strings) return;
+                if (!settings) return;
 
-                try {localStorage.setItem('strings', strings);}
+                try {localStorage.setItem('settings', settings);}
                 catch (e) {alert('Error: Could not save values');}
+            }
+
+            function saveSetting(property, value) {
+                var settings = getSettings();
+                settings[property] = value;
+                setSettings(settings);
             }
         </script>
 

@@ -12,7 +12,7 @@ var mainWindow;
 
 var shortcuts = {
 	regular: ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8'],
-	control: ['CmdOrCtrl+F1', 'CmdOrCtrl+F2', 'CmdOrCtrl+F3', 'CmdOrCtrl+F4', 'CmdOrCtrl+F5', 'CmdOrCtrl+F6', 'CmdOrCtrl+F7', 'CmdOrCtrl+F8'],
+	control: ['Shift+Z', 'CmdOrCtrl+F2', 'CmdOrCtrl+F3', 'CmdOrCtrl+F4', 'CmdOrCtrl+F5', 'CmdOrCtrl+F6', 'CmdOrCtrl+F7', 'CmdOrCtrl+F8'],
 	alt: ['Alt+F1', 'Alt+F2', 'Alt+F3', 'Alt+F4', 'Alt+F5', 'Alt+F6', 'Alt+F7', 'Alt+F8']
 };
 
@@ -64,6 +64,7 @@ function close() {
 
 /**
  * Handler for the ipc input-change event
+ * @param event
  * @param {{index: number, value: string}} arg
  */
 function inputChanged(event, arg) {
@@ -81,6 +82,7 @@ function afterChanged(event, after) {
 }
 
 function schemeChanged(event, scheme) {
+	console.log('scheme changed');
 	var oldScheme = settings.scheme;
 	settings.scheme = scheme;
 	unregisterAll(oldScheme);
@@ -103,16 +105,24 @@ function unregisterAll(scheme) {
 }
 
 function registerAll() {
-	settings[scheme].forEach(function(accelerator, index) {
-		if (settings.inputs[index]) register(accelerator, typeFunction(settings.inputs[index]));
+	console.log('registering all');
+	shortcuts[settings.scheme].forEach(function(accelerator, index) {
+		if (settings.inputs[index]) {
+
+			register(accelerator, typeFunction(settings.inputs[index]));
+		}
 	});
 }
 
 function unregister(accelerator) {
-	if (globalShortcut.isRegistered(accelerator)) globalShortcut.unregister(accelerator);
+	if (globalShortcut.isRegistered(accelerator)) {
+		console.log('unregistering '+accelerator);
+		globalShortcut.unregister(accelerator);
+	}
 }
 
 function register(accelerator, fn) {
+	console.log('registering ' + accelerator);
 	globalShortcut.register(accelerator, fn);
 }
 
