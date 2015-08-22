@@ -11,9 +11,7 @@ var globalShortcut = require('global-shortcut');
 var mainWindow;
 
 var shortcuts = {
-	regular: ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8'],
-	control: ['Shift+Z', 'CmdOrCtrl+F2', 'CmdOrCtrl+F3', 'CmdOrCtrl+F4', 'CmdOrCtrl+F5', 'CmdOrCtrl+F6', 'CmdOrCtrl+F7', 'CmdOrCtrl+F8'],
-	alt: ['Alt+F1', 'Alt+F2', 'Alt+F3', 'Alt+F4', 'Alt+F5', 'Alt+F6', 'Alt+F7', 'Alt+F8']
+	regular: ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8']
 };
 
 var settings = {
@@ -31,7 +29,6 @@ app.on('window-all-closed', close);
 
 ipc.on('input-changed', inputChanged);
 ipc.on('after-changed', afterChanged);
-ipc.on('scheme-changed', schemeChanged);
 
 //=========================================================
 // Main functions
@@ -81,14 +78,6 @@ function afterChanged(event, after) {
 	settings.after = after;
 }
 
-function schemeChanged(event, scheme) {
-	console.log('scheme changed');
-	var oldScheme = settings.scheme;
-	settings.scheme = scheme;
-	unregisterAll(oldScheme);
-	registerAll();
-}
-
 //=========================================================
 // Helper functions
 //=========================================================
@@ -97,20 +86,6 @@ function requestSettingsFromWindow() {
 	mainWindow.send('settings?');
 	mainWindow.once('settings', function(setts) {
 		settings = setts;
-	});
-}
-
-function unregisterAll(scheme) {
-	shortcuts[scheme].map(unregister);
-}
-
-function registerAll() {
-	console.log('registering all');
-	shortcuts[settings.scheme].forEach(function(accelerator, index) {
-		if (settings.inputs[index]) {
-
-			register(accelerator, typeFunction(settings.inputs[index]));
-		}
 	});
 }
 

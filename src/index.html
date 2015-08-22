@@ -62,8 +62,7 @@
                 justify-content: space-around;
             }
 
-            .controls-container .after-container,
-            .controls-container .scheme-container {
+            .controls-container .after-container {
                 display: flex;
                 flex-direction: column;
             }
@@ -144,6 +143,16 @@
                 margin-left: 50px;
             }
 
+            .info-page {
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            a {
+                cursor: pointer;
+            }
         </style>
     </head>
     <body>
@@ -167,15 +176,20 @@
                     </template>
                 </neon-animatable>
 
-                <neon-animatable class="main-page">
+                <neon-animatable class="info-page">
                     <i class="material-icons button back-button" on-click="mainScreen">keyboard_backspace</i>
+
+                    <h1>Xiv Auto Typer</h1>
+                    <h3>Version <span>{{version}}</span></h3>
+                    <h4><a on-click="openSite">Visit Website</a></h4>
+
                 </neon-animatable>
 
                 <neon-animatable class="controls-page">
                     <i class="material-icons button back-button" on-click="mainScreen">keyboard_backspace</i>
                     <div class="controls-container">
                         <div class="after-container">
-                            <h4>After typing...</h4>
+                            <h4>After typing do the following:</h4>
                             <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
                                 <input checked class="mdl-radio__button" name="after" type="radio" value="enter">
                                 <span class="mdl-radio__label">Include enter</span>
@@ -185,24 +199,8 @@
                                 <span class="mdl-radio__label">Include tab</span>
                             </label>
                             <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
-                                <input class="mdl-radio__button" name="after" type="radio" value="none">
+                                <input class="mdl-radio__button" name="after" type="radio" value="none" checked>
                                 <span class="mdl-radio__label">Do nothing</span>
-                            </label>
-                        </div>
-
-                        <div class="scheme-container">
-                            <h4>Hotkey style</h4>
-                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
-                                <input checked class="mdl-radio__button" name="scheme" type="radio" value="regular">
-                                <span class="mdl-radio__label">F1</span>
-                            </label>
-                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
-                                <input class="mdl-radio__button" name="scheme" type="radio" value="control">
-                                <span class="mdl-radio__label">Ctrl + F1</span>
-                            </label>
-                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
-                                <input class="mdl-radio__button" name="scheme" type="radio" value="alt">
-                                <span class="mdl-radio__label">Alt + F1</span>
                             </label>
                         </div>
                     </div>
@@ -214,6 +212,7 @@
             //var $ = require('jquery'); todo remove
             var ipc = require('ipc');
             var app = document.getElementById('app');
+            app.version = require('./package.json').version;
             app.selected = 0;
 
             app.addEventListener('dom-change', function() {
@@ -225,7 +224,6 @@
                     loadStrings();
                     emitInputChangeEvents();
                     emitAfterChangeEvent();
-                    emitSchemeChangeEvent();
                 }, 0);
             });
 
@@ -245,6 +243,11 @@
                 return a+b;
             };
 
+            app.openSite = function() {
+                var shell = require('shell');
+                shell.openExternal('https://github.com/mccxiv/xiv-auto-typer/releases/latest');
+            };
+
             function emitInputChangeEvents() {
                 eachNode('.input-container input', function(el, index) {
                     el.addEventListener('change', function() {
@@ -260,15 +263,6 @@
                         console.log('after changeed!');
                         saveSetting('after', el.value);
                         ipc.send('after-changed', el.value);
-                    });
-                });
-            }
-
-            function emitSchemeChangeEvent() {
-                eachNode('input[name="scheme"]', function(el) {
-                    el.addEventListener('click', function() {
-                        saveSetting('scheme', el.value);
-                        ipc.send('scheme-changed', el.value);
                     });
                 });
             }
@@ -309,11 +303,7 @@
                 var afterEl = document.querySelector('input[name="after"][value="'+settings.after+'"]');
                 if (afterEl) afterEl.click();
 
-                var schemeEl = document.querySelector('input[name="scheme"][value="'+settings.scheme+'"]');
-                if (schemeEl) schemeEl.click();
-
-                ipc.send('scheme-after', settings.after);
-                ipc.send('scheme-changed', settings.scheme);
+                ipc.send('after-changed', settings.after);
             }
 
             function getSettings() {
