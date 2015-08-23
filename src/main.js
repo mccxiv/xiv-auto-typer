@@ -51,7 +51,6 @@ function makeWindow() {
 
 	mainWindow = new Window(windowOpts);
 	mainWindow.loadUrl('file://' + __dirname + '/index.html');
-	//mainWindow.openDevTools();
 
 	mainWindow.on('closed', function() {
 		mainWindow = null;
