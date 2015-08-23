@@ -29,10 +29,15 @@ app.on('window-all-closed', close);
 
 ipc.on('input-changed', inputChanged);
 ipc.on('after-changed', afterChanged);
+ipc.on('open-dev-tools', devTools);
 
 //=========================================================
 // Main functions
 //=========================================================
+
+function devTools() {
+	mainWindow.openDevTools();
+}
 
 function makeWindow() {
 	var windowOpts = {
@@ -46,7 +51,7 @@ function makeWindow() {
 
 	mainWindow = new Window(windowOpts);
 	mainWindow.loadUrl('file://' + __dirname + '/index.html');
-	mainWindow.openDevTools();
+	//mainWindow.openDevTools();
 
 	mainWindow.on('closed', function() {
 		mainWindow = null;

@@ -152,6 +152,11 @@
 
             a {
                 cursor: pointer;
+                color: #03A9F4;
+            }
+
+            a:hover {
+                text-decoration: underline;
             }
         </style>
     </head>
@@ -342,6 +347,14 @@
                 settings[property] = value;
                 setSettings(settings);
             }
+        </script>
+
+        <script>
+            document.addEventListener('keyup', function(e) {
+                if (e.which === 123 && e.ctrlKey) {
+                    ipc.send('open-dev-tools');
+                }
+            });
         </script>
 
     </body>
