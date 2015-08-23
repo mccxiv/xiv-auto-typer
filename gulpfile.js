@@ -12,17 +12,18 @@ var VERSION = require('./src/package.json').version;
 var TEMP_BUILD_DIR = 'vulcanized';
 var BUILD_DIR = 'build';
 var DIST_DIR = 'dist';
+var ICO = __dirname + '/assets/auto-typer-logo.ico';
 
 gulp.task('make-installer', function() {
 	return winInstaller({
-		appDirectory: BUILD_DIR + '/AutoShutdown-win32-ia32',
+		appDirectory: BUILD_DIR + '/xiv-auto-typer-win32-ia32',
 		outputDirectory: DIST_DIR,
-		iconUrl: __dirname + '/build-assets/logo-gray.ico',
-		exe: 'AutoShutdown.exe',
-		setupExe: 'AutoShutdown-Setup-'+VERSION+'.exe',
+		iconUrl: ICO,
+		exe: 'Xiv-Auto-Typer.exe',
+		setupExe: 'Xiv-Auto-Typer-Setup-'+VERSION+'.exe',
 		authors: 'Mccxiv Software',
-		title: 'Auto Shutdown',
-		setupIcon: __dirname + '/build-assets/logo-gray.ico'
+		title: 'Xiv Auto Typer',
+		setupIcon: ICO
 	});
 });
 
@@ -51,8 +52,8 @@ gulp.task('copy-files', function() {
 });
 
 gulp.task('copy-modules', function() {
-	return gulp.src(['src/modules/**'])
-		.pipe(gulp.dest(TEMP_BUILD_DIR+'/modules'));
+	return gulp.src(['src/node_modules/robotjs/**'])
+		.pipe(gulp.dest(TEMP_BUILD_DIR+'/node_modules/robotjs/'));
 });
 
 gulp.task('copy-assets', function() {
@@ -71,31 +72,36 @@ gulp.task('clean-up-after', function(cb) {
 gulp.task('package', function(cb) {
 	var opts = {
 		dir: 'vulcanized',
-		name: 'AutoShutdown',
+		name: 'Xiv-Auto-Typer',
 		platform: 'all',
 		arch: 'ia32',
 		version: '0.30.2',
 		'app-version': VERSION,
-		icon: 'build-assets/logo-gray.ico',
+		icon: ICO,
 		'version-string': {
 			CompanyName: 'Mccxiv Software',
 			LegalCopyright: 'Copyright 2015 Andrea Stella. All rights reserved',
 			ProductVersion: VERSION,
 			FileVersion: VERSION,
-			FileDescription: 'Auto Shutdown',
-			ProductName: 'Auto Shutdown'
+			FileDescription: 'Xiv Auto Typer',
+			ProductName: 'Xiv Auto Typer'
 		},
 		out: BUILD_DIR
 	};
 	packager(opts, cb);
 });
 
+gulp.task('copy-build-to-dist', function() {
+	return gulp.src('build/Xiv-Auto-Typer-win32-ia32/**')
+		.pipe(gulp.dest('dist/Xiv-Auto-Typer-win32/'));
+});
+
 gulp.task('make-zip-windows', function() {
-	return gulp.src('build/AutoShutdown-win32-ia32/**/*')
+	return gulp.src('build/Xiv-Auto-Typer-win32-ia32/**/*')
 		.pipe(rename(function(path) {
-			path.dirname = path.dirname === '.'? 'AutoShutdown' : 'AutoShutdown/'+path.dirname;
+			path.dirname = path.dirname === '.'? 'Xiv-Auto-Typer' : 'Xiv-Auto-Typer/'+path.dirname;
 		}))
-		.pipe(zip('AutoShutdown-win32-'+VERSION+'.zip'))
+		.pipe(zip('Xiv-Auto-Typer-win32-'+VERSION+'.zip'))
 		.pipe(gulp.dest('dist/'));
 });
 
@@ -103,7 +109,7 @@ gulp.task('build', function(cb) {
 	sequence('clean-up-before',
 		['vulcanize', 'copy-files', 'copy-modules', 'copy-assets'],
 		'package',
-		['make-installer', 'make-zip-windows'],
+		['make-installer', 'make-zip-windows', 'copy-build-to-dist'],
 		'clean-up-after', cb);
 });
 

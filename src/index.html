@@ -4,12 +4,12 @@
         <meta charset="UTF-8">
         <title></title>
 
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.2/material.light_blue-pink.min.css" />
         <script src="https://storage.googleapis.com/code.getmdl.io/1.0.2/material.min.js"></script>
-        <!--<link rel="stylesheet" href="bower_components/material-design-lite/material.min.css">
-        <script src="bower_components/material-design-lite/material.min.js"></script>-->
 
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <script>window.WebComponents = true;</script>
+
         <link rel="import" href="bower_components/polymer/polymer.html">
         <link rel="import" href="bower_components/neon-animation/neon-animated-pages.html">
         <link rel="import" href="bower_components/neon-animation/neon-animatable.html">
@@ -209,7 +209,6 @@
         </template>
 
         <script>
-            //var $ = require('jquery'); todo remove
             var ipc = require('ipc');
             var app = document.getElementById('app');
             app.version = require('./package.json').version;
