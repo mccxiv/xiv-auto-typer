@@ -1,3 +1,6 @@
-## :speech_balloon: Xiv Auto Typer :speech_balloon:
+## Xiv Auto Typer :speech_balloon:
 
-Work in progress
+A Windows desktop application.  
+Press F1-F8 to paste the corresponding line.
+
+![](http://i.imgur.com/Nngxjv3.gif)
