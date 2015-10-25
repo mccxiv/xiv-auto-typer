@@ -1,5 +1,6 @@
 {
   "name": "xiv-auto-typer-project",
+  "private": true,
   "dependencies": {
   },
   "devDependencies": {

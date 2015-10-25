@@ -1,5 +1,6 @@
 {
   "name": "XivAutoTyper",
+  "private": true,
   "version": "0.0.2",
   "main": "main.js",
   "author": {
@@ -7,6 +8,7 @@
     "email": "adr.stella@gmail.com",
     "url": "http://mccxiv.me"
   },
+  "license": "ISC",
   "description": "Types phrases for you",
   "dependencies": {
     "electron-prebuilt": "^0.30.1",
